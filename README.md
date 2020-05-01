@@ -1,2 +1,2 @@
 # Thermal-stress-estuarine-discharge-Mcav
- Analysis scripts associated with the forthcoming manuscript by Studivan et al "Synergistic effects of thermal stress and estuarine discharge on transcriptomic variation of the coral Montastraea cavernosa in southeast Florida"
+ Scripts associated with the analysis of whole-transcriptome gene expression profiles for  Montastraea cavernosa corals and algal symbionts Cladocopium spp. from southeast Florida exposed to thermal stress and estuarine discharge using in situ and ex situ experiments
