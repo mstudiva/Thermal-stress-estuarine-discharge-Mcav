@@ -165,13 +165,13 @@ dev.off()
 # plotting PCoA by genotype and combined treatments
 pdf(file="PCoA_exsitu_genotype_sym.pdf", width=12, height=6)
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#40004b","#762a83", "#9970ab","#c2a5cf","#e7d4e8","#f7f7f7", "#d9f0d3","#a6dba0","#a6dba0","#1b7837", "#00441b"),pch=c(0,15,2,17)[as.numeric((as.factor(conditions$temp.water)))], xlab="Coordinate 1", ylab="Coordinate 2", main="genotype")
-# cluster overlay of genotype
-ordiellipse(scores, conditions$genotype, label=F, draw= "polygon", col=c("#40004b","#762a83", "#9970ab","#c2a5cf","#e7d4e8","#f7f7f7", "#d9f0d3","#a6dba0","#a6dba0","#1b7837", "#00441b"))
+plot(scores[,1], scores[,2],col=c("#40004b","#762a83", "#9970ab","#c2a5cf","#e7d4e8","#f7f7f7", "#d9f0d3","#a6dba0","#a6dba0","#1b7837", "#00441b")[as.numeric((as.factor(conditions$colony)))],pch=c(0,15,2,17)[as.numeric(as.factor(conditions$temp.water))], xlab="Coordinate 1", ylab="Coordinate 2", main="Colony")
+# cluster overlay of colony
+ordiellipse(scores, conditions$colony, label=F, draw= "polygon", col=c("#40004b","#762a83", "#9970ab","#c2a5cf","#e7d4e8","#f7f7f7", "#d9f0d3","#a6dba0","#a6dba0","#1b7837", "#00441b"))
 legend("bottomleft", legend=c("a","b","c","d","e","f","g","h","i","j","k"), fill = c("#40004b","#762a83", "#9970ab","#c2a5cf","#e7d4e8","#f7f7f7", "#d9f0d3","#a6dba0","#a6dba0","#1b7837", "#00441b"), bty="n")
 legend("topleft", legend=c("control.offshore", "control.discharge","elevated.offshore","elevated.discharge"), pch=c(0,15,2,17), bty="n")
 # cluster overlay of temp.water
-plot(scores[,1], scores[,2],col=c("#92c5de","#0571b0","#f4a582","#ca0020"),pch=c(1,3,4,5,6,7,8,9,10,16,18)[as.numeric(as.factor(conditions$genotype))], xlab="Coordinate 1", ylab="Coordinate 2", main="Temp + Water")
+plot(scores[,1], scores[,2],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$temp.water))],pch=c(1,3,4,5,6,7,8,9,10,16,18)[as.numeric(as.factor(conditions$colony))], xlab="Coordinate 1", ylab="Coordinate 2", main="Temp + Water")
 ordiellipse(scores, conditions$temp.water, label=F, draw= "polygon", col=c("#92c5de","#0571b0","#f4a582","#ca0020"))
 legend("topleft", legend=c("control.offshore", "control.discharge","elevated.offshore","elevated.discharge"), fill = c("#92c5de","#0571b0","#f4a582","#ca0020"), bty="n")
 legend("bottomleft", legend=c("a","b","c","d","e","f","g","h","i","j","k"), pch=c(1,3,4,5,6,7,8,9,10,16,18), bty="n")
@@ -180,13 +180,13 @@ dev.off()
 # plotting PCoA by treatments separately
 pdf(file="PCoA_exsitu_sym.pdf", width=12, height=6)
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#0571b0","#ca0020"),pch=c(0,15)[as.numeric((as.factor(conditions$water)))], xlab="Coordinate 1", ylab="Coordinate 2", main="Temperature")
+plot(scores[,1], scores[,2],col=c("#0571b0","#ca0020")[as.numeric(as.factor(conditions$temp))],pch=c(0,15)[as.numeric(as.factor(conditions$water))], xlab="Coordinate 1", ylab="Coordinate 2", main="Temperature")
 # cluster overlay of temp
 ordiellipse(scores, conditions$temp, label=F, draw= "polygon", col=c("#0571b0","#ca0020"))
 legend("bottomleft", legend=c("control","elevated"), fill = c("#0571b0","#ca0020"), bty="n")
 legend("topleft", legend=c("offshore","discharge"), pch=c(0,15), bty="n")
 # cluster overlay of water
-plot(scores[,1], scores[,2],col=c("#018571","#a6611a"),pch=c(25,17)[as.numeric(as.factor(conditions$temp))], xlab="Coordinate 1", ylab="Coordinate 2", main="Water")
+plot(scores[,1], scores[,2],col=c("#018571","#a6611a")[as.numeric(as.factor(conditions$water))],pch=c(25,17)[as.numeric(as.factor(conditions$temp))], xlab="Coordinate 1", ylab="Coordinate 2", main="Water")
 ordiellipse(scores, conditions$water, label=F, draw= "polygon", col=c("#018571","#a6611a"))
 legend("topleft", legend=c("offshore","discharge"), fill = c("#018571","#a6611a"), bty="n")
 legend("bottomleft", legend=c("control","elevated"), pch=c(25,17), bty="n")

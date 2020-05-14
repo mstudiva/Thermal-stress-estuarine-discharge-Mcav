@@ -149,14 +149,14 @@ dev.off()
 # plotting PCoA by site
 pdf(file="PCoA_insitu_site_mcav.pdf", width=12, height=6)
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#91bfdb","#fee090","#fc8d59","#e0f3f8","#ffffbf","#d73027","#4575b4"),pch=c(15,16,17)[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1", ylab="Coordinate 2", main="Time")
+plot(scores[,1], scores[,2],col=c("#91bfdb","#fee090","#fc8d59","#e0f3f8","#ffffbf","#d73027","#4575b4")[as.numeric(as.factor(conditions$time))],pch=c(15,16,17)[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1", ylab="Coordinate 2", main="Time")
 # cluster overlay of time
 ordiellipse(scores, conditions$time, label=F, draw= "polygon", col=c("#91bfdb","#fee090","#fc8d59","#e0f3f8","#ffffbf","#d73027","#4575b4"))
 legend("bottomleft", legend=c("Oct 13","Sep 14","Jun 15","Oct 15","Mar 16","Jul 16","Nov 16"), fill = c("#91bfdb","#fee090","#fc8d59","#e0f3f8","#ffffbf","#d73027","#4575b4"), bty="n")
 legend("topleft", legend=c("Central","Ledge","South"), pch=c(15,16,17), bty="n")
-plot(scores[,1], scores[,2],col=c("#d8b365","#f6e8c3", "#5ab4ac"),pch=c(0,1,2,5,6,7,8)[as.numeric((as.factor(conditions$time)))], xlab="Coordinate 1", ylab="Coordinate 2", main="Site")
+plot(scores[,1], scores[,2],col=c("#d8b365","#f6e8c3", "#5ab4ac")[as.numeric(as.factor(conditions$site))],pch=c(0,1,2,5,6,7,8)[as.numeric((as.factor(conditions$time)))], xlab="Coordinate 1", ylab="Coordinate 2", main="Site")
 # cluster overlay of site
-ordiellipse(scores, conditions$site, label=F, draw= "polygon", col=c("#d8b365","#f6e8c3", "#5ab4ac"))
+ordiellipse(scores, conditions$site, label=F, draw= "polygon", col=c("#5ab4ac","#f6e8c3","#d8b365"))
 legend("topleft", legend=c("Central","Ledge","South"), fill = c("#d8b365","#f6e8c3", "#5ab4ac"), bty="n")
 legend("bottomleft", legend=c("Oct 13","Sep 14","Jun 15","Oct 15","Mar 16","Jul 16","Nov 16"), pch=c(0,1,2,5,6,7,8), bty="n")
 dev.off()
@@ -167,12 +167,12 @@ conditions$wetdry <- factor(conditions$wetdry, levels = c("dry","wet"))
 # plotting PCoA by season
 pdf(file="PCoA_insitu_season_mcav.pdf", width=12, height=6)
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#d8b365","#f6e8c3", "#5ab4ac"),pch=c(2,17)[as.numeric((as.factor(conditions$wetdry)))], xlab="Coordinate 1", ylab="Coordinate 2", main="Site")
+plot(scores[,1], scores[,2],col=c("#d8b365","#f6e8c3", "#5ab4ac")[as.numeric(as.factor(conditions$site))],pch=c(2,17)[as.numeric(as.factor(conditions$wetdry))], xlab="Coordinate 1", ylab="Coordinate 2", main="Site")
 # cluster overlay of site
-ordiellipse(scores, conditions$site, label=F, draw= "polygon", col=c("#d8b365","#f6e8c3", "#5ab4ac"))
+ordiellipse(scores, conditions$site, label=F, draw= "polygon", col=c("#5ab4ac","#f6e8c3","#d8b365"))
 legend("topleft", legend=c("Central","Ledge","South"), fill = c("#d8b365","#f6e8c3", "#5ab4ac"), bty="n")
 legend("bottomleft", legend=c("dry","wet"), pch=c(2,17), bty="n")
-plot(scores[,1], scores[,2],col=c("#d73027","#4575b4"),pch=c(15,16,17)[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1", ylab="Coordinate 2", main="Season")
+plot(scores[,1], scores[,2],col=c("#d73027","#4575b4")[as.numeric(as.factor(conditions$wetdry))],pch=c(15,16,17)[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1", ylab="Coordinate 2", main="Season")
 # cluster overlay of season
 ordiellipse(scores, conditions$wetdry, label=F, draw= "polygon", col=c("#d73027","#4575b4"))
 legend("bottomleft", legend=c("dry","wet"), fill = c("#d73027","#4575b4"), bty="n")
