@@ -49,19 +49,13 @@ str(design)
 # make big dataframe including all factors and interaction, getting normalized data for outlier detection
 dds = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ time*site)
 
-dds.season = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ site*wetdry)
-
 # reorders treatment factor according to "control" vs "treatment" levels
 dds$time <- factor(dds$time, levels = c("0","1","2","3","4","5","6"))
 dds$site <- factor(dds$site, levels = c("south","ledge","central"))
 
-dds.season$site <- factor(dds.season$site, levels = c("south","ledge","central"))
-dds.season$wetdry <- factor(dds.season$wetdry, levels = c("dry","wet"))
-
 # for large datasets, rlog may take too much time, especially for an unfiltered dataframe
 # vsd is much faster and still works for outlier detection
 Vsd=varianceStabilizingTransformation(dds)
-Vsd.season=varianceStabilizingTransformation(dds.season)
 
 library(Biobase)
 e=ExpressionSet(assay(Vsd), AnnotatedDataFrame(as.data.frame(colData(Vsd))))
@@ -78,7 +72,6 @@ arrayQualityMetrics(e,intgroup=c("site"),force=T)
 outs=c(1,8,17)
 countData=countData[,-outs]
 Vsd=Vsd[,-outs]
-Vsd.season=Vsd.season[,-outs]
 design=design[-outs,]
 
 # remaking model with outliers removed from dataset
@@ -86,12 +79,8 @@ dds = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ time*
 dds$time <- factor(dds$time, levels = c("0","1","2","3","4","5","6"))
 dds$site <- factor(dds$site, levels = c("south","ledge","central"))
 
-dds.season = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ site*wetdry)
-dds.season$site <- factor(dds.season$site, levels = c("south","ledge","central"))
-dds.season$wetdry <- factor(dds.season$wetdry, levels = c("dry","wet"))
-
 # save all these dataframes as an Rdata package so you don't need to rerun each time
-save(dds,dds.season,design,countData,Vsd,Vsd.season,file="initial.RData")
+save(dds,design,countData,Vsd,file="initial.RData")
 
 #---------------------
 # generating normalized variance-stabilized data for PCoA, heatmaps, etc
@@ -107,12 +96,7 @@ snames=paste(colnames(countData),design[,4],design[,7],sep=".")
 # renames the column names
 colnames(vsd)=snames
 
-vsd.season=assay(Vsd.season)
-snames.season=paste(colnames(countData),design[,7],design[,9],sep=".")
-# renames the column names
-colnames(vsd.season)=snames.season
-
-save(vsd,vsd.season,design,file="vsd.RData")
+save(vsd,design,file="vsd.RData")
 
 #-------------------
 # EXPLORING SIMILARITIES AMONG SAMPLES
@@ -164,21 +148,6 @@ dev.off()
 conditions$site <- factor(conditions$site, levels = c("south","ledge","central"))
 conditions$wetdry <- factor(conditions$wetdry, levels = c("dry","wet"))
 
-# plotting PCoA by season
-pdf(file="PCoA_insitu_season_mcav.pdf", width=12, height=6)
-par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#d8b365","#f6e8c3", "#5ab4ac")[as.numeric(as.factor(conditions$site))],pch=c(2,17)[as.numeric(as.factor(conditions$wetdry))], xlab="Coordinate 1", ylab="Coordinate 2", main="Site")
-# cluster overlay of site
-ordiellipse(scores, conditions$site, label=F, draw= "polygon", col=c("#5ab4ac","#f6e8c3","#d8b365"))
-legend("topleft", legend=c("Central","Ledge","South"), fill = c("#d8b365","#f6e8c3", "#5ab4ac"), bty="n")
-legend("bottomleft", legend=c("dry","wet"), pch=c(2,17), bty="n")
-plot(scores[,1], scores[,2],col=c("#d73027","#4575b4")[as.numeric(as.factor(conditions$wetdry))],pch=c(15,16,17)[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1", ylab="Coordinate 2", main="Season")
-# cluster overlay of season
-ordiellipse(scores, conditions$wetdry, label=F, draw= "polygon", col=c("#d73027","#4575b4"))
-legend("bottomleft", legend=c("dry","wet"), fill = c("#d73027","#4575b4"), bty="n")
-legend("topleft", legend=c("Central","Ledge","South"), pch=c(15,16,17), bty="n")
-dev.off()
-
 # neighbor-joining tree of samples (based on significant PCo's):
 pdf(file="PCoA_tree.pdf", width=10, height=10)
 tre=nj(dist(scores[,1:4]))
@@ -188,9 +157,6 @@ dev.off()
 # formal analysis of variance in distance matricies: 
 ad=adonis(t(vsd)~time*site,data=conditions,method="manhattan",permutations=9999)
 ad
-
-ad.season=adonis(t(vsd.season)~site*wetdry,data=conditions,method="manhattan",permutations=9999)
-ad.season
 
 # creating pie chart to represent ANOVA results
 cols=c("blue","orange","lightblue","grey80")
@@ -224,19 +190,8 @@ dds.site=DESeq(dds1,parallel=TRUE)
 dds1$time <- factor(dds1$time, levels = c("0","1","2","3","4","5","6"))
 dds.time=DESeq(dds1,test="LRT",reduced=~site, parallel=TRUE)
 
-# full model for site and season
-dds.season=DESeq(dds.season, parallel=TRUE)
-
-dds.season.i=DESeq(dds.season,test="LRT",reduced=~site+wetdry, parallel=TRUE)
-
-dds2=DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ site+wetdry)
-dds2$wetdry <- factor(dds2$wetdry, levels = c("dry","wet"))
-dds.season.season=DESeq(dds2, parallel=TRUE)
-dds2$site <- factor(dds2$site, levels = c("south","ledge","central"))
-dds.season.site=DESeq(dds2,test="LRT",reduced=~wetdry, parallel=TRUE)
-
 # saving all models
-save(dds,dds.time,dds.site,dds.i,dds.season,dds.season.site,dds.season.season,dds.season.i,file="realModels.RData")
+save(dds,dds.time,dds.site,dds.i,file="realModels.RData")
 
 #--------------
 # GLM analysis
@@ -357,36 +312,7 @@ t6.5=results(dds.time,contrast=c("time","6","5"))
 summary(t6.5)
 degs.t6.5=row.names(t6.5)[t6.5$padj<0.1 & !(is.na(t6.5$padj))]
 
-# site+season
-# site treatment
-season.site=results(dds.season.site) 
-summary(season.site) 
-degs.season.site=row.names(season.site)[season.site$padj<0.1 & !(is.na(season.site$padj))]
-
-# season treatment
-season.season=results(dds.season.season,contrast=c("wetdry","dry","wet")) 
-summary(season.season) 
-degs.season.season=row.names(season.season)[season.season$padj<0.1 & !(is.na(season.season$padj))]
-
-# site:season interaction
-season.int=results(dds.season.i)
-summary(season.int)
-degs.season.int=row.names(season.int)[season.int$padj<0.1 & !(is.na(season.int$padj))]
-
-# site contrasts
-season.ledge.south=results(dds.season.site,contrast=c("site","ledge","south"))
-summary(season.ledge.south)
-degs.season.ledge.south=row.names(season.ledge.south)[season.ledge.south$padj<0.1 & !(is.na(season.ledge.south$padj))]
-
-season.central.south=results(dds.season.site,contrast=c("site","central","south"))
-summary(season.central.south)
-degs.season.central.south=row.names(season.central.south)[season.central.south$padj<0.1 & !(is.na(season.central.south$padj))]
-
-season.central.ledge=results(dds.season.site,contrast=c("site","central","ledge"))
-summary(season.central.ledge)
-degs.season.central.ledge=row.names(season.central.ledge)[season.central.ledge$padj<0.1 & !(is.na(season.central.ledge$padj))]
-
-save(time,site,int,ledge.south,central.south,central.ledge,t1.0,t2.0,t3.0,t4.0,t5.0,t6.0,t2.1,t3.1,t4.1,t5.1,t6.1,t3.2,t4.2,t5.2,t6.2,t4.3,t5.3,t6.3,t5.4,t6.4,t6.5,season.site,season.season,season.int,season.ledge.south,season.central.south,season.central.ledge,degs.time,degs.site,degs.int,degs.ledge.south,degs.central.south,degs.central.ledge,degs.t1.0,degs.t2.0,degs.t3.0,degs.t4.0,degs.t5.0,degs.t6.0,degs.t2.1,degs.t3.1,degs.t4.1,degs.t5.1,degs.t6.1,degs.t3.2,degs.t4.2,degs.t5.2,degs.t6.2,degs.t4.3,degs.t5.3,degs.t6.3,degs.t5.4,degs.t6.4,degs.t6.5,degs.season.site,degs.season.season,degs.season.int,degs.season.ledge.south,degs.season.central.south,degs.season.central.ledge,file="pvals.RData")
+save(time,site,int,ledge.south,central.south,central.ledge,t1.0,t2.0,t3.0,t4.0,t5.0,t6.0,t2.1,t3.1,t4.1,t5.1,t6.1,t3.2,t4.2,t5.2,t6.2,t4.3,t5.3,t6.3,t5.4,t6.4,t6.5,degs.time,degs.site,degs.int,degs.ledge.south,degs.central.south,degs.central.ledge,degs.t1.0,degs.t2.0,degs.t3.0,degs.t4.0,degs.t5.0,degs.t6.0,degs.t2.1,degs.t3.1,degs.t4.1,degs.t5.1,degs.t6.1,degs.t3.2,degs.t4.2,degs.t5.2,degs.t6.2,degs.t4.3,degs.t5.3,degs.t6.3,degs.t5.4,degs.t6.4,degs.t6.5,file="pvals.RData")
 
 #-------------------
 # density plots: are my DEGs high-abundant or low-abundant?
@@ -402,16 +328,6 @@ lines(density(means[degs.time]),col="blue")
 lines(density(means[degs.site]),col="orange")
 lines(density(means[degs.int]),col="lightblue")
 legend("topright", title = "Factor", legend=c("time","site","interaction"), fill = c("blue","orange","lightblue"))
-dev.off()
-
-means.season=apply(vsd.season,1,mean)
-
-pdf(file="DEG_density_season.pdf", height=5, width=5)
-plot(density(means.season))
-lines(density(means.season[degs.season.site]),col="blue")
-lines(density(means.season[degs.season.season]),col="orange")
-lines(density(means.season[degs.season.int]),col="lightblue")
-legend("topright", title = "Factor", legend=c("site","season","interaction"), fill = c("blue","orange","lightblue"))
 dev.off()
 
 #-------------------
