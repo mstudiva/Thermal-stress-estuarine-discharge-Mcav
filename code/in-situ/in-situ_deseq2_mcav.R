@@ -133,10 +133,10 @@ dev.off()
 # plotting PCoA by site
 pdf(file="PCoA_insitu_site_mcav.pdf", width=12, height=6)
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#91bfdb","#fee090","#fc8d59","#e0f3f8","#ffffbf","#d73027","#4575b4")[as.numeric(as.factor(conditions$time))],pch=c(15,16,17)[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1", ylab="Coordinate 2", main="Time")
+plot(scores[,1], scores[,2],col=c("#74add1","#f46d43","#a50026","#fee090","#313695","#4575b4","#e0f3f8")[as.numeric(as.factor(conditions$time))],pch=c(15,16,17)[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1", ylab="Coordinate 2", main="Time")
 # cluster overlay of time
-ordiellipse(scores, conditions$time, label=F, draw= "polygon", col=c("#91bfdb","#fee090","#fc8d59","#e0f3f8","#ffffbf","#d73027","#4575b4"))
-legend("bottomleft", legend=c("Oct 13","Sep 14","Jun 15","Oct 15","Mar 16","Jul 16","Nov 16"), fill = c("#91bfdb","#fee090","#fc8d59","#e0f3f8","#ffffbf","#d73027","#4575b4"), bty="n")
+ordiellipse(scores, conditions$time, label=F, draw= "polygon", col=c("#74add1","#f46d43","#a50026","#fee090","#313695","#4575b4","#e0f3f8"))
+legend("bottomleft", legend=c("Oct 13","Sep 14","Jun 15","Oct 15","Mar 16","Jul 16","Nov 16"), fill = c("#74add1","#f46d43","#a50026","#fee090","#313695","#4575b4","#e0f3f8"), bty="n")
 legend("topleft", legend=c("Central","Ledge","South"), pch=c(15,16,17), bty="n")
 plot(scores[,1], scores[,2],col=c("#d8b365","#f6e8c3", "#5ab4ac")[as.numeric(as.factor(conditions$site))],pch=c(0,1,2,5,6,7,8)[as.numeric((as.factor(conditions$time)))], xlab="Coordinate 1", ylab="Coordinate 2", main="Site")
 # cluster overlay of site
